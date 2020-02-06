@@ -4,7 +4,7 @@ node {
 
      
   stage('Git-Checkout') {
-   git 'https://github.com/adityashankar48711/mindtree-devops-30Jan2020.git'
+   git 'https://github.com/adityashankar80/mindtree-devops-30Jan2020.git'
   }
     
  def project_path="01-Jenkins/Code/petclinic"
@@ -27,6 +27,29 @@ node {
    sh label: '', script: 'mvn package'
   }
   
+  
+  stage ('Deploy approval'){
+    input "Deploy to production ?"
+}
+  
+   stage('Sonar Analysis'){
+        withSonarQubeEnv('SonarQube'){
+         sh 'mvn sonar:sonar'
+        }
+        }
+	
+	stage('Jfrog Artifacory Upload') {
+ 	def server= Artifactory.server 'Artifactory'
+ 	def uploadSpec= """{
+ 	"files": [{
+ 	"pattern": "/var/lib/jenkins/workspace/Aws_Demo/01-Jenkins/Code/petclinic/target/petclinic.war",
+ 	"target": "petclinic"}]
+ 	}"""
+ 	server.upload(uploadSpec)
+ 	 
+ 	}
+
+
    stage('Archive-Artifacts') {
    archiveArtifacts 'target/*.war'
   }
