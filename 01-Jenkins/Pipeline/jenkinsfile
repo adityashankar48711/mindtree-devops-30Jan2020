@@ -27,9 +27,6 @@ node {
    sh label: '', script: 'mvn package'
   }
   
-  
-  
-  
    stage('Sonar Analysis'){
         withSonarQubeEnv('SonarQube'){
          sh 'mvn sonar:sonar'
